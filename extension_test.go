@@ -10,6 +10,7 @@ import (
 var (
 	extensionCustomTracking = []byte(`<Extension type="testCustomTracking"><CustomTracking><Tracking event="event.1"><![CDATA[http://event.1]]></Tracking><Tracking event="event.2"><![CDATA[http://event.2]]></Tracking></CustomTracking></Extension>`)
 	extensionData           = []byte(`<Extension type="testCustomTracking"><SkippableAdType>Generic</SkippableAdType></Extension>`)
+	extensionFallbackIndex  = []byte(`<Extension type="waterfall" fallback_index="2"></Extension>`)
 )
 
 func TestExtensionCustomTrackingMarshal(t *testing.T) {
@@ -76,4 +77,21 @@ func TestExtensionGeneric(t *testing.T) {
 
 	// assert the resulting marshaled extension
 	assert.Equal(t, string(extensionData), string(xmlExtensionOutput))
+}
+
+func TestWaterfall(t *testing.T) {
+	// unmarshal the Extension
+	var e Extension
+	assert.NoError(t, xml.Unmarshal(extensionFallbackIndex, &e))
+
+	// assert the resulting extension
+	assert.Equal(t, "waterfall", e.Type)
+	assert.Equal(t, 2, e.FallbackIndex)
+
+	// marshal the extension
+	xmlExtensionOutput, err := xml.Marshal(e)
+	assert.NoError(t, err)
+
+	// assert the resulting marshaled extension
+	assert.Equal(t, string(extensionFallbackIndex), string(xmlExtensionOutput))
 }

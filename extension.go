@@ -8,6 +8,9 @@ type Extension struct {
 	Type           string     `xml:"type,attr,omitempty"`
 	CustomTracking []Tracking `xml:"CustomTracking>Tracking,omitempty"`
 	Data           []byte     `xml:",innerxml"`
+
+	// FallbackIndex is used by the IMA SDK for VAST-based waterfall
+	FallbackIndex int `xml:"fallback_index,attr,omitempty"`
 }
 
 // the extension type as a middleware in the encoding process.
@@ -16,6 +19,9 @@ type extension Extension
 type extensionNoCT struct {
 	Type string `xml:"type,attr,omitempty"`
 	Data []byte `xml:",innerxml"`
+
+	// FallbackIndex is used by the IMA SDK for VAST-based waterfall
+	FallbackIndex int `xml:"fallback_index,attr,omitempty"`
 }
 
 // MarshalXML implements xml.Marshaler interface.
@@ -26,9 +32,9 @@ func (e Extension) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
 	// if we have custom trackers, we should ignore the data, if not, then we
 	// should consider only the data.
 	if len(e.CustomTracking) > 0 {
-		e2 = extension{Type: e.Type, CustomTracking: e.CustomTracking}
+		e2 = extension{Type: e.Type, CustomTracking: e.CustomTracking, FallbackIndex: e.FallbackIndex}
 	} else {
-		e2 = extensionNoCT{Type: e.Type, Data: e.Data}
+		e2 = extensionNoCT{Type: e.Type, Data: e.Data, FallbackIndex: e.FallbackIndex}
 	}
 
 	return enc.EncodeElement(e2, start)
@@ -45,6 +51,7 @@ func (e *Extension) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error
 	// copy the type and the customTracking
 	e.Type = e2.Type
 	e.CustomTracking = e2.CustomTracking
+	e.FallbackIndex = e2.FallbackIndex
 	// copy the data only of customTraking is empty
 	if len(e.CustomTracking) == 0 {
 		e.Data = e2.Data
