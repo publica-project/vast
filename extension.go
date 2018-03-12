@@ -10,7 +10,7 @@ type Extension struct {
 	Data           []byte     `xml:",innerxml"`
 
 	// FallbackIndex is used by the IMA SDK for VAST-based waterfall
-	FallbackIndex int `xml:"fallback_index,attr,omitempty"`
+	FallbackIndex *int `xml:"fallback_index,attr,omitempty"`
 }
 
 // the extension type as a middleware in the encoding process.
@@ -21,7 +21,7 @@ type extensionNoCT struct {
 	Data []byte `xml:",innerxml"`
 
 	// FallbackIndex is used by the IMA SDK for VAST-based waterfall
-	FallbackIndex int `xml:"fallback_index,attr,omitempty"`
+	FallbackIndex *int `xml:"fallback_index,attr,omitempty"`
 }
 
 // MarshalXML implements xml.Marshaler interface.
