@@ -531,6 +531,25 @@ func TestSpotXVpaid(t *testing.T) {
 	}
 }
 
+func TestPricingOmitted(t *testing.T) {
+	vast := []byte(`<VAST version=""><Ad><InLine><AdTitle></AdTitle><Creatives></Creatives><Description></Description><Survey></Survey><Extensions></Extensions></InLine></Ad></VAST>`)
+
+	e := &VAST{
+		Ads: []Ad{
+			{
+				InLine: &InLine{},
+			},
+		},
+	}
+
+	// marshal the extension
+	xmlExtensionOutput, err := xml.Marshal(e)
+	assert.NoError(t, err)
+
+	// assert the resulting marshaled extension
+	assert.Equal(t, string(vast), string(xmlExtensionOutput))
+}
+
 func TestExtraSpacesVpaid(t *testing.T) {
 	v, _, _, err := loadFixture("testdata/extraspaces_vpaid.xml")
 	if !assert.NoError(t, err) {
